@@ -79,6 +79,7 @@ DEB_PACKAGES=(
     ["bcompare"]="https://www.scootersoftware.com/files/bcompare-5.0.5.30614_amd64.deb"
     ["qqmusic"]="https://dldir1.qq.com/music/clntupate/linux/qqmusic_1.1.7_amd64.deb"
     ["youdao-dict"]="http://cidian.youdao.com/download/youdao-dict_6.0.0-ubuntu-amd64.deb"
+    ["stacer"]="https://github.com/oguzhaninan/Stacer/releases/download/v1.1.0/stacer_1.1.0_amd64.deb"
     # Add your new packages here, for example:
     # ["another-app-name"]="https://example.com/path/to/another-app.deb"
 )
