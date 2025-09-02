@@ -80,6 +80,8 @@ DEB_PACKAGES=(
     ["qqmusic"]="https://dldir1.qq.com/music/clntupate/linux/qqmusic_1.1.7_amd64.deb"
     ["youdao-dict"]="http://cidian.youdao.com/download/youdao-dict_6.0.0-ubuntu-amd64.deb"
     ["stacer"]="https://github.com/oguzhaninan/Stacer/releases/download/v1.1.0/stacer_1.1.0_amd64.deb"
+    ["clash-verge"]="https://github.com/clash-verge-rev/clash-verge-rev/releases/download/v1.5.11/clash-verge_1.5.11_amd64.deb"
+    ["obsidian"]="https://github.com/obsidianmd/obsidian-releases/releases/download/v1.6.3/obsidian_1.6.3_amd64.deb"
     # Add your new packages here, for example:
     # ["another-app-name"]="https://example.com/path/to/another-app.deb"
 )
