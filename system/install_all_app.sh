@@ -1,19 +1,20 @@
 #!/bin/bash
 
 # ===================================================================================
-# Universal Application Installer for Ubuntu (v6 - Pipelined)
+# Universal Application Installer for Ubuntu (v7 - NPM Support)
 #
-# This script automates the installation of applications from three sources:
+# This script automates the installation of applications from four sources:
 # 1. APT repositories
 # 2. Snap Store
-# 3. Direct .deb file downloads from a configurable list of URLs
+# 3. Direct .deb file downloads
+# 4. NPM global packages
 #
 # Key Features:
 # - Pipelined Execution: As soon as a .deb package finishes downloading, its
 #   installation begins immediately while other downloads continue in the background.
 # - Parallel Operations: Starts downloading .deb packages in the background while
 #   Snap packages are being installed to significantly reduce total runtime.
-# - Extensible: Easily add new .deb packages by editing the DEB_PACKAGES array.
+# - Extensible: Easily add new packages by editing the configuration arrays.
 # - Idempotent: Skips already installed packages to avoid redundant work.
 # - Robust: Stops on error and cleans up temporary files.
 # ===================================================================================
@@ -24,6 +25,7 @@ set -e
 # --- Helper Functions ---
 is_installed() { dpkg -s "$1" &>/dev/null; }
 is_snap_installed() { snap list | grep -q "^$1\s"; }
+is_npm_installed() { npm list -g "$1" &>/dev/null; }
 
 # --- CONFIGURATION ---
 # Review and edit the package lists below.
@@ -85,6 +87,13 @@ DEB_PACKAGES=(
     ["obsidian"]="https://github.com/obsidianmd/obsidian-releases/releases/download/v1.6.3/obsidian_1.6.3_amd64.deb"
 )
 
+# 4. NPM Global Packages
+NPM_PACKAGES=(
+    "gemini"
+    "claude"
+    "claude-code-router"
+)
+
 # Associative array to map download PIDs to filenames
 declare -gA WGET_PIDS_TO_FILES
 
@@ -106,6 +115,7 @@ main() {
     trap 'echo "Cleaning up temporary directory..."; rm -rf "$DOWNLOAD_DIR"' EXIT
 
     install_apt_packages
+    install_npm_packages
 
     # This function will start downloads and return immediately
     queue_and_download_debs_background
@@ -142,6 +152,31 @@ install_apt_packages() {
         apt-get install -y "${packages_to_install[@]}"
     else
         echo "APT: All packages are already installed."
+    fi
+}
+
+install_npm_packages() {
+    echo ""
+    echo "--- Processing NPM Global Packages... ---"
+    if ! command -v npm &> /dev/null; then
+        echo "NPM: command not found. Skipping. (Is nodejs installed via apt?)"
+        return
+    fi
+
+    local packages_to_install=()
+    for pkg in "${NPM_PACKAGES[@]}"; do
+        if is_npm_installed "$pkg"; then
+            echo "NPM: '$pkg' is already installed. Skipping."
+        else
+            packages_to_install+=("$pkg")
+        fi
+    done
+
+    if [ ${#packages_to_install[@]} -gt 0 ]; then
+        echo "NPM: Installing ${#packages_to_install[@]} packages: ${packages_to_install[*]}..."
+        npm install -g "${packages_to_install[@]}"
+    else
+        echo "NPM: All packages are already installed."
     fi
 }
 
